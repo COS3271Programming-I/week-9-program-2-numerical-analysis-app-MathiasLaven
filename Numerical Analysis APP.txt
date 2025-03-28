@@ -1,0 +1,98 @@
+package my_project;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class MyClass {
+    public static void main(String[] args) throws FileNotFoundException {
+
+		String fileName = "E:/New Stuff/School Files/12th Grade/Semester 2/Java/Projects/MathiasLaven-Week9Projects/Numerical Analysis File.txt";
+		File textFile = new File(fileName);
+		Scanner fileInput = new Scanner(textFile);
+		
+		String line;
+		String[] splitLine;
+		String number;
+		double convertedNumber;
+		
+		int numberCount = 0;
+		double numberSum = 0;
+		
+		//the firstLoop is to ensure these variables can be initialized without issue
+		double largestNumber = 0; 
+		double smallestNumber = 0;
+		boolean firstLoop = true;
+		
+		while (fileInput.hasNextLine()) {
+			line = fileInput.nextLine().trim();
+			splitLine = line.split(" "); //get each number individually
+			
+			//loop through every number
+			for (int i = 0; i < splitLine.length; i++) {
+				number = splitLine[i];
+				
+				//ensure it's actually a number
+				if (stringIsFloat(number)) {
+					convertedNumber = Double.parseDouble(number);
+					
+					numberCount++;
+					numberSum += convertedNumber;
+					
+					//ensures problems don't arise if the smallest number is greater than 0, e.g.
+					//by immediately overwriting the initialized value
+					if (firstLoop) {
+						largestNumber = convertedNumber;
+						smallestNumber = convertedNumber;
+						firstLoop = false;
+					} else if (convertedNumber > largestNumber) {
+						largestNumber = convertedNumber;
+					} else if (convertedNumber < smallestNumber) {
+						smallestNumber = convertedNumber;
+					}
+					
+				}
+			}
+			
+		}
+		
+		//simple math
+		double numberAverage = (double)numberSum / (double)numberCount;
+		double numberRange = largestNumber - smallestNumber;
+		
+		//output
+		System.out.format("Number count: %d\n", numberCount);
+		System.out.format("Average value: %.1f\n", numberAverage);
+		System.out.format("Largest number: %.1f\n", largestNumber);
+		System.out.format("Smallest number: %.1f\n", smallestNumber);
+		System.out.format("Value range: %.1f\n", numberRange);
+		
+		fileInput.close();
+		
+	}
+    public static boolean stringIsFloat(String string) {
+    	
+    	//float-checking function from last week with 1 modification:
+    	//now tests for 0-1 negative signs as well, to accommodate negative numbers
+    	
+    	//https://stackoverflow.com/questions/275944/how-do-i-count-the-number-of-occurrences-of-a-char-in-a-string
+    	int numberOfDecimals = string.length() - string.replace(".", "").length();
+    	if (numberOfDecimals > 1) { return false; };
+    	
+    	int numberOfNegatives = string.length() - string.replace("-", "").length();
+    	if (numberOfNegatives > 1) { return false; };
+    	
+    	//necessary to ensure the above aren't picked up,
+    	//safe to do this because the above check would return early
+    	string = string.replace(".", "").replace("-", "");
+    	
+    	char[] stringChars = string.toCharArray();
+    	for (int i = 0; i < stringChars.length; i++) {
+    		if (!Character.isDigit(stringChars[i])) {
+    			return false;
+    		}
+    	}
+    	
+    	return true;
+    	
+    }
+}
